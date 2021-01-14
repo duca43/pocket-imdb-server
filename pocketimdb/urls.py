@@ -5,10 +5,12 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from .users.urls import userRouter
+from .movies.urls import movieRouter
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', include(userRouter.urls)),
+    path('', include(movieRouter.urls)),
 ]
