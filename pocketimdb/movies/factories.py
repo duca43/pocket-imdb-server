@@ -8,7 +8,7 @@ class MovieFactory(DjangoModelFactory):
     class Meta:
         model = Movie
 
-    name = Faker('sentence', nb_words=2, variable_nb_words=True)
+    title = Faker('sentence', nb_words=3, variable_nb_words=True)
     description = Faker('text', max_nb_chars=200)
     cover_image_url = Faker('image_url')
-    genre = FuzzyChoice(MOVIE_GENRES)
+    genre = FuzzyChoice([x[0] for x in MOVIE_GENRES])
