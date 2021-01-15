@@ -10,6 +10,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
     
     name = serializers.CharField(required=True)
 
+    def validate(self, data):
+        if len(data['password']) < 6:
+            raise serializers.ValidationError({"password": "Password is too short!"})
+        return data
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
