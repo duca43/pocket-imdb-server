@@ -1,6 +1,5 @@
 from django.db import models
-from .utils import MOVIE_GENRES, ACTION
-
+from .constants import MOVIE_GENRES, ACTION
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)

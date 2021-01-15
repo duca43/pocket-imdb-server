@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from ...factories import MovieFactory
+from django.conf import settings
+from pocketimdb.movies.factories import MovieFactory
 
 class Command(BaseCommand):
     help = 'Generates specified number of movies'

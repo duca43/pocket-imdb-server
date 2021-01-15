@@ -2,7 +2,7 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice
 from factory import Faker
 from .models import Movie
-from .utils import MOVIE_GENRES
+from .constants import MOVIE_GENRES
 
 class MovieFactory(DjangoModelFactory):
     class Meta:
