@@ -8,7 +8,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'password', 'name']
     
-    name = serializers.CharField(required=True)
+    email = serializers.CharField(required=True, max_length=255)
+    name = serializers.CharField(required=True, max_length=100)
+    password = serializers.CharField(required=True, min_length=6, max_length=128, write_only=True)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
