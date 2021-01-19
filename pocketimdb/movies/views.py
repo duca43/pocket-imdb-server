@@ -4,6 +4,7 @@ from .models import Movie
 from .serializers import MovieSerializer
 
 class MovieViewSet(mixins.ListModelMixin,
+                mixins.RetrieveModelMixin,
                 viewsets.GenericViewSet):
 
     queryset = Movie.objects.all()
