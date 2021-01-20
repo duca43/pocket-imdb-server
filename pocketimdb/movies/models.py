@@ -6,3 +6,4 @@ class Movie(models.Model):
     description = models.CharField(max_length=200, blank=True)
     cover_image_url = models.CharField(max_length=300)
     genre = models.CharField(max_length=2, choices=MOVIE_GENRES, default=ACTION)
+    visits = models.IntegerField(blank=True, default=0)
