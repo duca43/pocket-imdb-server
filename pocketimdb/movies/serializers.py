@@ -1,12 +1,17 @@
 from rest_framework import serializers
-from .models import Movie
+from .models import Movie, MovieLike
 
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'description', 'cover_image_url', 'genre', 'likes', 'dislikes', 'user_feedback']
+        fields = ['id', 'title', 'description', 'cover_image_url', 'genre', 'likes', 'dislikes', 'user_liked_or_disliked']
 
     likes = serializers.IntegerField(read_only=True, default=0)
     dislikes = serializers.IntegerField(read_only=True, default=0)
-    user_feedback = serializers.BooleanField(read_only=True, default=None)
+    user_liked_or_disliked = serializers.IntegerField(read_only=True, default=0)
+
+class AddMovieLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieLike
+        fields = ['like']

@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     #my apps
     'pocketimdb.users',
     'pocketimdb.movies',
-    'pocketimdb.movie_feedbacks',
 ]
 
 MIDDLEWARE = [
