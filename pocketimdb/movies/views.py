@@ -24,17 +24,18 @@ class MovieViewSet(mixins.ListModelMixin,
             user_liked_or_disliked=Coalesce(Sum('movie_likes__like', filter=Q(movie_likes__user=self.request.user)), 0),
         ).order_by('id')
 
-    @action(methods=['POST', 'DELETE'], detail=True, url_path='likes')
+    @action(methods=['POST'], detail=True, url_path='likes')
     def like(self, request, pk):
-        if (request.method == 'POST'):
-            serializer = AddMovieLikeSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            MovieLike.objects.update_or_create(movie_id=pk, user=request.user, defaults={**serializer.data})
-            return Response(status=HTTP_200_OK)
-        else:
-            movie_likes = MovieLike.objects.filter(movie_id=pk, user=request.user)
-            if not movie_likes.exists():
-                error = {"not_exists_error": ["There is no like/dislike for chosen movie and user."]}
-                return Response(error, status=HTTP_404_NOT_FOUND)    
-            movie_likes.delete()
-            return Response(status=HTTP_204_NO_CONTENT)
+        serializer = AddMovieLikeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        MovieLike.objects.update_or_create(movie=self.get_object(), user=request.user, defaults={**serializer.data})
+        return Response(status=HTTP_200_OK)
+
+    @like.mapping.delete
+    def remove_like(self, request, pk):
+        movie_likes = MovieLike.objects.filter(movie_id=pk, user=request.user)
+        if not movie_likes.exists():
+            error = {"not_exists_error": ["There is no like/dislike for chosen movie and user."]}
+            return Response(error, status=HTTP_404_NOT_FOUND)    
+        movie_likes.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
