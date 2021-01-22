@@ -24,14 +24,14 @@ class MovieViewSet(mixins.ListModelMixin,
             user_liked_or_disliked=Coalesce(Sum('movie_likes__like', filter=Q(movie_likes__user=self.request.user)), 0),
         ).order_by('id')
 
-    @action(methods=['POST'], detail=True, url_path='likes')
+    @action(methods=['POST'], detail=True, url_path='like')
     def like(self, request, pk):
         serializer = AddMovieLikeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         MovieLike.objects.update_or_create(movie=self.get_object(), user=request.user, defaults={**serializer.data})
         return Response(status=HTTP_200_OK)
 
-    @like.mapping.delete
+    @action(methods=['DELETE'], detail=True, url_path='remove-like')
     def remove_like(self, request, pk):
         movie_likes = MovieLike.objects.filter(movie_id=pk, user=request.user)
         if not movie_likes.exists():
