@@ -20,6 +20,6 @@ class MovieViewSet(mixins.ListModelMixin,
     @action(methods=['PATCH'], detail=True, url_path='visits') 
     def increment_visits(self, request, pk):          
         movie = Movie.objects.get(pk=pk)
-        movie.visits = F('visits') + 1
+        movie.visits = movie.visits + 1
         movie.save()
         return Response(status=HTTP_200_OK)
