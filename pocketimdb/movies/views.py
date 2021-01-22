@@ -1,10 +1,11 @@
 from django.db.models import Count, Sum, Q, functions, F, Case, When
 from django.db.models.functions import Coalesce
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from .models import Movie, MovieLike, Like
 from .serializers import MovieSerializer, AddMovieLikeSerializer
 
@@ -14,8 +15,9 @@ class MovieViewSet(mixins.ListModelMixin,
 
     serializer_class = MovieSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title']
+    filterset_fields = ['genre']
 
     def get_queryset(self):
         return Movie.objects.annotate(
@@ -39,3 +41,10 @@ class MovieViewSet(mixins.ListModelMixin,
             return Response(error, status=HTTP_404_NOT_FOUND)    
         movie_likes.delete()
         return Response(status=HTTP_204_NO_CONTENT)
+
+    @action(methods=['PATCH'], detail=True, url_path='visits') 
+    def increment_visits(self, request, pk):          
+        movie = Movie.objects.get(pk=pk)
+        movie.visits = movie.visits + 1
+        movie.save()
+        return Response(status=HTTP_200_OK)
