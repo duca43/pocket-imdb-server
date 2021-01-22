@@ -4,6 +4,10 @@ from .constants import MOVIE_GENRES, ACTION
 
 User = get_user_model()
 
+class Like(models.IntegerChoices):
+    LIKE = 1
+    DISLIKE = -1
+
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=200, blank=True)
@@ -13,10 +17,6 @@ class Movie(models.Model):
 class MovieLike(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie_likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes')
-
-    class Like(models.IntegerChoices):
-        LIKE = 1
-        DISLIKE = -1
 
     like = models.IntegerField(choices=Like.choices)
 
