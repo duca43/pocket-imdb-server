@@ -1,4 +1,4 @@
-from django.db.models import F
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -14,8 +14,9 @@ class MovieViewSet(mixins.ListModelMixin,
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title']
+    filterset_fields = ['genre']
 
     @action(methods=['PATCH'], detail=True, url_path='visits') 
     def increment_visits(self, request, pk):          
