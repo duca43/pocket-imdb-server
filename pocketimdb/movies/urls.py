@@ -3,4 +3,4 @@ from rest_framework import routers
 from .views import MovieViewSet
 
 movieRouter = routers.SimpleRouter()
-movieRouter.register(r'movies', MovieViewSet)
+movieRouter.register(r'movies', MovieViewSet, basename='Movie')
