@@ -11,21 +11,20 @@ class MovieCommentSerializer(serializers.ModelSerializer):
 
     content = serializers.CharField(source='comment')
     user = serializers.StringRelatedField(read_only=True)
-    timestamp = serializers.SerializerMethodField(read_only=True)
+    relative_timestamp = serializers.SerializerMethodField(read_only=True)
     
-    def get_timestamp(self, obj):
+    def get_relative_timestamp(self, obj):
         return get_timestamp_relative_diff(obj.timestamp.replace(tzinfo=None))
 
     class Meta:
         model = MovieComment
-        fields = ['content', 'user', 'timestamp']
+        fields = ['content', 'user', 'timestamp', 'relative_timestamp']
 
 class MovieSerializer(serializers.ModelSerializer):
 
     likes = serializers.IntegerField(read_only=True, default=0)
     dislikes = serializers.IntegerField(read_only=True, default=0)
     user_liked_or_disliked = serializers.IntegerField(read_only=True, default=0)
-    movie_comments = MovieCommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Movie
@@ -37,8 +36,7 @@ class MovieSerializer(serializers.ModelSerializer):
                 'likes', 
                 'dislikes', 
                 'user_liked_or_disliked', 
-                'visits',
-                'movie_comments']
+                'visits']
 
 class AddMovieLikeSerializer(serializers.ModelSerializer):
     class Meta:

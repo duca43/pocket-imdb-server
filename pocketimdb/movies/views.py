@@ -49,10 +49,18 @@ class MovieViewSet(mixins.ListModelMixin,
         movie.save()
         return Response(status=HTTP_200_OK)
 
-    @action(methods=['POST'], detail=True, url_path='comments')
-    def comment(self, request, pk):
+    @action(methods=['POST'], detail=True, url_path='post-comment')
+    def post_comment(self, request, pk):
+        print('caos')
         serializer = AddMovieCommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         movie_comment = MovieComment.objects.create(**serializer.data, movie=self.get_object(), user=request.user)
         response_serializer = MovieCommentSerializer(movie_comment)
         return Response(response_serializer.data, status=HTTP_201_CREATED)
+
+    @action(detail=True, url_path='comments')
+    def comment(self, request, pk):
+        queryset = MovieComment.objects.filter(movie_id=pk)
+        page = self.paginate_queryset(queryset)
+        response_serializer = MovieCommentSerializer(page, many=True)
+        return self.get_paginated_response(response_serializer.data)
