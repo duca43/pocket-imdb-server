@@ -1,24 +1,22 @@
 from rest_framework import serializers
 from .models import Movie, MovieLike, MovieComment
-from .utils import get_timestamp_relative_diff
+from pocketimdb.users.serializers import BasicUserSerializer
 
 class AddMovieCommentSerializer(serializers.ModelSerializer):
+
+    content = serializers.CharField(required=True, max_length=500)
+
     class Meta:
         model = MovieComment
-        fields = ['comment']
+        fields = ['content']
 
 class MovieCommentSerializer(serializers.ModelSerializer):
 
-    content = serializers.CharField(source='comment')
-    user = serializers.StringRelatedField(read_only=True)
-    relative_timestamp = serializers.SerializerMethodField(read_only=True)
-    
-    def get_relative_timestamp(self, obj):
-        return get_timestamp_relative_diff(obj.timestamp.replace(tzinfo=None))
+    user = BasicUserSerializer(read_only=True)
 
     class Meta:
         model = MovieComment
-        fields = ['content', 'user', 'timestamp', 'relative_timestamp']
+        fields = ['id', 'content', 'user', 'created_at']
 
 class MovieSerializer(serializers.ModelSerializer):
 
