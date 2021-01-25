@@ -23,3 +23,15 @@ class MovieLike(models.Model):
 
     class Meta:
         unique_together = ('movie', 'user',)
+
+class WatchList(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_watch_list')
+    movie_watch = models.ManyToManyField(Movie, through='MovieWatch')
+
+class MovieWatch(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    watch_list = models.ForeignKey(WatchList, on_delete=models.CASCADE)
+    watched = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('movie', 'watch_list',)
