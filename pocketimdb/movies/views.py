@@ -51,7 +51,6 @@ class MovieViewSet(mixins.ListModelMixin,
 
     @action(methods=['POST'], detail=True, url_path='post-comment')
     def post_comment(self, request, pk):
-        print('caos')
         serializer = AddMovieCommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         movie_comment = MovieComment.objects.create(**serializer.data, movie=self.get_object(), user=request.user)
