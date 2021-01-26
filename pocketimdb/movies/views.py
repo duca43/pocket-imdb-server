@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from .models import Movie, MovieLike, Like
-from .serializers import MovieSerializer, AddMovieLikeSerializer
+from .serializers import MovieSerializer, AddMovieLikeSerializer, MovieTitleSerializer
 
 class MovieViewSet(mixins.ListModelMixin,
                 mixins.RetrieveModelMixin,
@@ -48,3 +48,10 @@ class MovieViewSet(mixins.ListModelMixin,
         movie.visits = movie.visits + 1
         movie.save()
         return Response(status=HTTP_200_OK)
+
+    @action(detail=True, url_path='related') 
+    def get_related_movies(self, request, pk):
+        movie = self.get_object()          
+        queryset = Movie.objects.filter(genre=movie.genre).exclude(pk=pk)[:10]
+        response_serializer = MovieTitleSerializer(queryset, many=True)
+        return Response(response_serializer.data, status=HTTP_200_OK)

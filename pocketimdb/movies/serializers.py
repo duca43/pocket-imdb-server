@@ -19,6 +19,13 @@ class MovieSerializer(serializers.ModelSerializer):
                 'user_liked_or_disliked', 
                 'visits']
 
+class MovieTitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Movie
+        fields = ['id', 
+                'title']
+
 class AddMovieLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieLike
