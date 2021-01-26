@@ -19,6 +19,14 @@ class MovieSerializer(serializers.ModelSerializer):
                 'user_liked_or_disliked', 
                 'visits']
 
+class PopularMovieSerializer(serializers.ModelSerializer):
+
+    likes = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Movie
+        fields = ['id', 'title', 'likes',]
+
 class AddMovieLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieLike
