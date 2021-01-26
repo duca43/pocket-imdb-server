@@ -49,8 +49,12 @@ class MovieViewSet(mixins.ListModelMixin,
         movie.save()
         return Response(status=HTTP_200_OK)
 
-    @action(detail=False, url_path='popular') 
-    def get_popular_movies(self, request):
+
+class PopularMoviesViewSet(viewsets.GenericViewSet):
+
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
         likesQuery = Coalesce(Count('movie_likes__like', filter=Q(movie_likes__like=Like.LIKE)), 0)
         queryset = Movie.objects.annotate(likes=likesQuery).filter(likes__gt=0).order_by('-likes')[:10]
         response_serializer = PopularMovieSerializer(queryset, many=True)
