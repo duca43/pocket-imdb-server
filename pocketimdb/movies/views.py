@@ -55,7 +55,7 @@ class MovieCommentsViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return MovieComment.objects.filter(movie=self.kwargs['movie_pk'])
+        return MovieComment.objects.filter(movie=self.kwargs['movie_pk']).order_by('-created_at')
 
     def list(self, request, movie_pk):
         page = self.paginate_queryset(self.get_queryset())
