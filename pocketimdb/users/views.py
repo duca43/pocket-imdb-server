@@ -2,9 +2,17 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_403_FORBIDDEN
 from rest_framework.decorators import action
-from .serializers import CreateUserSerializer, UserSerializer
+from .serializers import (
+    CreateUserSerializer, 
+    UserSerializer, 
+    AddAndRemoveMovieWatchlistSerializer, 
+    UpdateMovieWatchlistSerializer, 
+    MovieWatchlistSerializer
+)
+from .models import MovieWatchlist
+from .permission import UserAccessPermission
 
 User = get_user_model()
 
@@ -28,3 +36,32 @@ class UserViewSet(mixins.CreateModelMixin,
     def get_current_user(self, request):          
         response_serializer = UserSerializer(request.user)
         return Response(response_serializer.data, HTTP_200_OK)
+
+class WatchlistViewSet(mixins.ListModelMixin,
+                    mixins.DestroyModelMixin,
+                    mixins.UpdateModelMixin,
+                    viewsets.GenericViewSet):
+
+    permission_classes = [IsAuthenticated, UserAccessPermission]
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.action == 'partial_update':
+            return UpdateMovieWatchlistSerializer
+        return MovieWatchlistSerializer
+
+    def get_queryset(self):
+        return MovieWatchlist.objects.filter(user=self.kwargs['user_pk']).order_by('id')
+
+    def create(self, request, user_pk):
+        serializer = AddAndRemoveMovieWatchlistSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        movie_id = serializer.data['movie']
+        if self.get_queryset().filter(movie_id=movie_id).exists():
+            error = {"unique_error": ["Chosen movie is already in your watchlist!"]}
+            return Response(error, status=HTTP_403_FORBIDDEN)
+
+        watchlist_movie = MovieWatchlist.objects.create(user_id=user_pk, movie_id=movie_id)
+        response_serializer = self.get_serializer(watchlist_movie)
+        return Response(response_serializer.data, status=HTTP_201_CREATED)

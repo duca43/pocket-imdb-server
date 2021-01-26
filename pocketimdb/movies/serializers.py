@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from .models import Movie, MovieLike, WatchList, MovieWatch
+from .models import Movie, MovieLike
 
 class MovieSerializer(serializers.ModelSerializer):
 
     likes = serializers.IntegerField(read_only=True, default=0)
     dislikes = serializers.IntegerField(read_only=True, default=0)
     user_liked_or_disliked = serializers.IntegerField(read_only=True, default=0)
-    in_user_watch_list = serializers.BooleanField(read_only=True, default=None)
-    user_watched = serializers.BooleanField(read_only=True, default=None)
+    is_in_user_watchlist = serializers.BooleanField(read_only=True, default=None)
+    did_user_watch = serializers.BooleanField(read_only=True, default=None)
 
     class Meta:
         model = Movie
@@ -19,8 +19,8 @@ class MovieSerializer(serializers.ModelSerializer):
                 'likes', 
                 'dislikes', 
                 'user_liked_or_disliked',
-                'in_user_watch_list',
-                'user_watched',
+                'is_in_user_watchlist',
+                'did_user_watch',
                 'visits']
 
 class BasicMovieSerializer(serializers.ModelSerializer):
@@ -31,28 +31,4 @@ class BasicMovieSerializer(serializers.ModelSerializer):
 class AddMovieLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieLike
-        fields = ['like']
-
-class MovieWatchSerializer(serializers.ModelSerializer):
-
-    movie = BasicMovieSerializer(read_only=True)
-
-    class Meta:
-        model = MovieWatch
-        fields = ['movie', 'watched']  
-
-class SetMovieWatchSerializer(serializers.ModelSerializer):
-
-    watched = serializers.BooleanField(required=True)
-
-    class Meta:
-        model = MovieWatch
-        fields = ['watched']
-
-class WatchListSerializer(serializers.ModelSerializer):
-
-    movies = MovieWatchSerializer(source='moviewatch_set', many=True)
-
-    class Meta:
-        model = WatchList
-        fields = ['id', 'movies']    
+        fields = ['like']  
