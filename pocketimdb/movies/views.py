@@ -5,9 +5,9 @@ from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
-from .models import Movie, MovieLike, Like
-from .serializers import MovieSerializer, AddMovieLikeSerializer
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from .models import Movie, MovieLike, Like, MovieComment
+from .serializers import MovieSerializer, AddMovieLikeSerializer, AddMovieCommentSerializer, MovieCommentSerializer
 
 class MovieViewSet(mixins.ListModelMixin,
                 mixins.RetrieveModelMixin,
@@ -48,3 +48,23 @@ class MovieViewSet(mixins.ListModelMixin,
         movie.visits = movie.visits + 1
         movie.save()
         return Response(status=HTTP_200_OK)
+
+class MovieCommentsViewSet(viewsets.GenericViewSet):
+
+    serializer_class = MovieCommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return MovieComment.objects.filter(movie=self.kwargs['movie_pk']).order_by('-created_at')
+
+    def list(self, request, movie_pk):
+        page = self.paginate_queryset(self.get_queryset())
+        response_serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(response_serializer.data)
+
+    def create(self, request, movie_pk):
+        serializer = AddMovieCommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        movie_comment = MovieComment.objects.create(**serializer.data, movie_id=movie_pk, user=request.user)
+        response_serializer = self.get_serializer(movie_comment)
+        return Response(response_serializer.data, status=HTTP_201_CREATED)
