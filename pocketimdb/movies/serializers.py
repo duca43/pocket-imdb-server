@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Movie, MovieLike
+from .models import Movie, MovieLike, MovieComment
+from pocketimdb.users.serializers import BasicUserSerializer
 
 class MovieSerializer(serializers.ModelSerializer):
 
@@ -32,3 +33,19 @@ class AddMovieLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieLike
         fields = ['like']  
+
+class AddMovieCommentSerializer(serializers.ModelSerializer):
+
+    content = serializers.CharField(required=True, max_length=500)
+
+    class Meta:
+        model = MovieComment
+        fields = ['content']
+
+class MovieCommentSerializer(serializers.ModelSerializer):
+
+    user = BasicUserSerializer(read_only=True)
+
+    class Meta:
+        model = MovieComment
+        fields = ['id', 'content', 'user', 'created_at']

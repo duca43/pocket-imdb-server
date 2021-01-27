@@ -5,7 +5,7 @@ class UserAccessPermission(BasePermission):
     message = 'You cannot access this resource.'
     
     def has_permission(self, request, view):
-        if str(request.user.id) == request.resolver_match.kwargs['user_pk']:
+        if str(request.user.id) == view.kwargs['user_pk']:
             return True
         return False
 

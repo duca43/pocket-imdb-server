@@ -56,12 +56,7 @@ class WatchlistViewSet(mixins.ListModelMixin,
     def create(self, request, user_pk):
         serializer = AddAndRemoveMovieWatchlistSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
         movie_id = serializer.data['movie']
-        if self.get_queryset().filter(movie_id=movie_id).exists():
-            error = {"unique_error": ["Chosen movie is already in your watchlist!"]}
-            return Response(error, status=HTTP_403_FORBIDDEN)
-
-        watchlist_movie = MovieWatchlist.objects.create(user_id=user_pk, movie_id=movie_id)
+        watchlist_movie = MovieWatchlist.objects.update_or_create(user_id=user_pk, movie_id=movie_id)[0]
         response_serializer = self.get_serializer(watchlist_movie)
         return Response(response_serializer.data, status=HTTP_201_CREATED)

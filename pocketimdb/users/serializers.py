@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from pocketimdb.movies.serializers import BasicMovieSerializer
 from .models import MovieWatchlist
 
 User = get_user_model()
@@ -18,6 +17,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'name']
+
+class BasicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email']
+
+from pocketimdb.movies.serializers import BasicMovieSerializer
 
 class MovieWatchlistSerializer(serializers.ModelSerializer):
 
