@@ -7,7 +7,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from .models import Movie, MovieLike, Like, MovieComment
-from .serializers import MovieSerializer, AddMovieLikeSerializer, AddMovieCommentSerializer, MovieCommentSerializer
+from .serializers import (
+    MovieSerializer, 
+    AddMovieLikeSerializer, 
+    AddMovieCommentSerializer, 
+    MovieCommentSerializer, 
+    PopularMovieSerializer
+)
 
 class MovieViewSet(mixins.ListModelMixin,
                 mixins.RetrieveModelMixin,
@@ -72,3 +78,13 @@ class MovieCommentsViewSet(viewsets.GenericViewSet):
         movie_comment = MovieComment.objects.create(**serializer.data, movie_id=movie_pk, user=request.user)
         response_serializer = self.get_serializer(movie_comment)
         return Response(response_serializer.data, status=HTTP_201_CREATED)
+
+class PopularMoviesViewSet(viewsets.GenericViewSet):
+
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        likesQuery = Coalesce(Count('movie_likes__like', filter=Q(movie_likes__like=Like.LIKE)), 0)
+        queryset = Movie.objects.annotate(likes=likesQuery).filter(likes__gt=0).order_by('-likes')[:10]
+        response_serializer = PopularMovieSerializer(queryset, many=True)
+        return Response(response_serializer.data, status=HTTP_200_OK)

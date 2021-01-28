@@ -49,3 +49,11 @@ class MovieCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieComment
         fields = ['id', 'content', 'user', 'created_at']
+
+class PopularMovieSerializer(serializers.ModelSerializer):
+
+    likes = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Movie
+        fields = ['id', 'title', 'likes',]
