@@ -23,3 +23,9 @@ class MovieLike(models.Model):
 
     class Meta:
         unique_together = ('movie', 'user',)
+
+class MovieComment(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie_comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comments')
+    content = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
