@@ -36,3 +36,13 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['name']
     
     objects = CustomUserManager()
+
+from pocketimdb.movies.models import Movie
+
+class MovieWatchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_watchlist')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie_watchlist')
+    is_watched = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'movie',)
