@@ -57,3 +57,10 @@ class PopularMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ['id', 'title', 'likes',]
+
+class MovieTitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Movie
+        fields = ['id', 
+                'title']

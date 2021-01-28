@@ -12,7 +12,8 @@ from .serializers import (
     AddMovieLikeSerializer, 
     AddMovieCommentSerializer, 
     MovieCommentSerializer, 
-    PopularMovieSerializer
+    PopularMovieSerializer,
+    MovieTitleSerializer
 )
 
 class MovieViewSet(mixins.ListModelMixin,
@@ -58,6 +59,13 @@ class MovieViewSet(mixins.ListModelMixin,
         movie.visits = movie.visits + 1
         movie.save()
         return Response(status=HTTP_200_OK)
+
+    @action(detail=True, url_path='related') 
+    def get_related_movies(self, request, pk):
+        movie = self.get_object()          
+        queryset = Movie.objects.filter(genre=movie.genre).exclude(pk=pk)[:10]
+        response_serializer = MovieTitleSerializer(queryset, many=True)
+        return Response(response_serializer.data, status=HTTP_200_OK)
 
 class MovieCommentsViewSet(viewsets.GenericViewSet):
 
